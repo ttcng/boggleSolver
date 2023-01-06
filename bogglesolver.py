@@ -50,6 +50,10 @@ class Graph:
 class BoggleSolver:
     with open("words.txt") as file:
         DICTIONARY = file.read().splitlines()
+    BEGINNING = {}
+    for i in range(1, 16):
+        with open(f"beginning{i}.txt") as file:
+            BEGINNING[i] = file.read().splitlines()
 
     def __init__(self, letters):
         self.letters_lookup = {i: letters[i] for i in range(16)}
@@ -74,10 +78,8 @@ class BoggleSolver:
             if word not in self.words:
                 print(word)
             self.words.add(word)
-
-        if any(word in w for w in self.DICTIONARY):
-            return True
-        return False
+        if len(word) <= 15:
+            return word in self.BEGINNING[len(word)]
 
 
 if __name__ == "__main__":
@@ -89,3 +91,4 @@ if __name__ == "__main__":
 
 # 65.57435822486877
 # 65.62787389755249
+# 60.21643900871277
