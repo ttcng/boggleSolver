@@ -1,13 +1,9 @@
 # Boggle solver takes in list of 16 words and outputs all the 4+ letter words that can be made
+from time import time
 from typing import Dict
 
 
-letters = [
-    'S', 'A', 'N', 'B', 
-    'E', 'I', 'W', 'A', 
-    'N', 'K', 'O', 'R', 
-    'T', 'N', 'H', 'D'
-]
+letters = ["S", "A", "N", "B", "E", "I", "W", "A", "N", "K", "O", "R", "T", "N", "H", "D"]
 
 
 class BoggleSolver:
@@ -18,25 +14,23 @@ class BoggleSolver:
         self.letters_lookup = {i: letters[i] for i in range(16)}
         self.words = set()
         self.subgraphs = []
-    
 
     @staticmethod
     def create_blank_graph() -> Dict[str, list]:
         return {node: BoggleSolver.get_adjacent_nodes(node) for node in range(16)}
-    
+
     @staticmethod
     def get_adjacent_nodes(node: int):
         x = node % 4
         y = node // 4
         adjacent = []
-        for i in (-1,0,1):
-            for j in (-1,0,1):
-                if (i!=0 or j!=0):
-                    if x+i in range(4) and y+j in range(4):
-                        adjacent.append(x+i+4*(y+j))
+        for i in (-1, 0, 1):
+            for j in (-1, 0, 1):
+                if i != 0 or j != 0:
+                    if x + i in range(4) and y + j in range(4):
+                        adjacent.append(x + i + 4 * (y + j))
         return adjacent
 
-    
     @staticmethod
     def remove_node(graph: Dict[str, list], node: int):
         new_graph = dict(graph)
@@ -49,7 +43,6 @@ class BoggleSolver:
                 ...
             new_graph[other_node] = new_adjacent
         return new_graph
-    
 
     def find_words(self, graph=None, path=None, current_node=None):
         if current_node is None:
@@ -59,11 +52,10 @@ class BoggleSolver:
             if self.check_path_valid(path):
                 for new_node in graph[current_node]:
                     self.find_words(
-                        self.remove_node(graph, current_node), 
+                        self.remove_node(graph, current_node),
                         path + [new_node],
                         new_node,
                     )
-    
 
     def check_path_valid(self, path):
         word = "".join(self.letters_lookup[letter] for letter in path)
@@ -77,11 +69,9 @@ class BoggleSolver:
         return False
 
 
-
-
-
-
 if __name__ == "__main__":
     bs = BoggleSolver(letters)
+    time_start = time()
     bs.find_words()
     print(bs.words)
+    print(f"Took {time()-time_start} seconds to execute")
