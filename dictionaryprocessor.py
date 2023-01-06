@@ -21,10 +21,13 @@ def get_n_letter_starts(words, n):
             starts.add(word[:n])
     return list(starts)
 
-
-if __name__ == "__main__":
+def generate_beginning_files():
     with open("words.txt", "r") as file:
         words = file.read().splitlines()
         for n in range(1, 16):
             with open(f"beginning{n}.txt", "w") as new_file:
                 new_file.write("\n".join(get_n_letter_starts(words, n)))
+
+
+if __name__ == "__main__":
+    

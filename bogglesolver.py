@@ -49,11 +49,11 @@ class Graph:
 
 class BoggleSolver:
     with open("words.txt") as file:
-        DICTIONARY = file.read().splitlines()
+        DICTIONARY = set(file.read().splitlines())
     BEGINNING = {}
     for i in range(1, 16):
         with open(f"beginning{i}.txt") as file:
-            BEGINNING[i] = file.read().splitlines()
+            BEGINNING[i] = set(file.read().splitlines())
 
     def __init__(self, letters):
         self.letters_lookup = {i: letters[i] for i in range(16)}
@@ -92,3 +92,5 @@ if __name__ == "__main__":
 # 65.57435822486877
 # 65.62787389755249
 # 60.21643900871277
+# 6.654704809188843
+# 0.009509801864624
