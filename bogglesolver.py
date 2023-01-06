@@ -1,6 +1,6 @@
 # Boggle solver takes in list of 16 words and outputs all the 4+ letter words that can be made
 from time import time
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 letters = ["S", "A", "N", "B", "E", "I", "W", "A", "N", "K", "O", "R", "T", "N", "H", "D"]
@@ -38,10 +38,13 @@ class Graph:
                 ...
             new_graph[other_node] = new_adjacent
         new_graph[node] = []
-        return new_graph
+        return Graph(new_graph)
+
+    def get(self, node: int):
+        return self.graph.get(node)
 
     def __str__(self):
-        return "\n".join([(k, v) for k, v in self.graph.items()])
+        return "\n".join([str((k, v)) for k, v in self.graph.items()])
 
 
 class BoggleSolver:
@@ -51,17 +54,16 @@ class BoggleSolver:
     def __init__(self, letters):
         self.letters_lookup = {i: letters[i] for i in range(16)}
         self.words = set()
-        self.subgraphs = []
 
-    def find_words(self, graph=None, path=None, current_node=None):
-        if current_node is None:
+    def find_words(self, graph: Optional[Graph] = None, path=None, current_node=None):
+        if graph is None:
             for node in range(16):
-                self.find_words(self.create_blank_graph(), [node], node)
+                self.find_words(Graph.create_blank(), [node], node)
         else:
             if self.check_path_valid(path):
-                for new_node in graph[current_node]:
+                for new_node in graph.get(current_node):
                     self.find_words(
-                        self.remove_node(graph, current_node),
+                        graph.remove_node(current_node),
                         path + [new_node],
                         new_node,
                     )
@@ -79,11 +81,11 @@ class BoggleSolver:
 
 
 if __name__ == "__main__":
-    g = Graph.create_blank()
-    g.remove_node(3)
-    print(g)
-    # bs = BoggleSolver(letters)
-    # time_start = time()
-    # bs.find_words()
-    # print(bs.words)
-    # print(f"Took {time()-time_start} seconds to execute")
+    bs = BoggleSolver(letters)
+    time_start = time()
+    bs.find_words()
+    print(bs.words)
+    print(f"Took {time()-time_start} seconds to execute")
+
+# 65.57435822486877
+# 65.62787389755249
