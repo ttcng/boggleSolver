@@ -9,7 +9,7 @@ def prune_invalid_length_words():
         newwords = []
         for word in words:
             if len(word) in range(4, 17):
-                newwords.append(word)
+                newwords.append(word.upper())
     with open("words.txt", "w") as file:
         file.write("\n".join(newwords))
 
@@ -21,6 +21,7 @@ def get_n_letter_starts(words, n):
             starts.add(word[:n])
     return list(starts)
 
+
 def generate_beginning_files():
     with open("words.txt", "r") as file:
         words = file.read().splitlines()
@@ -30,4 +31,5 @@ def generate_beginning_files():
 
 
 if __name__ == "__main__":
-    
+    prune_invalid_length_words()
+    generate_beginning_files()
