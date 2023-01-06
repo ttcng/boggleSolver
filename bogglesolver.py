@@ -1,9 +1,47 @@
 # Boggle solver takes in list of 16 words and outputs all the 4+ letter words that can be made
 from time import time
-from typing import Dict
+from typing import Dict, List
 
 
 letters = ["S", "A", "N", "B", "E", "I", "W", "A", "N", "K", "O", "R", "T", "N", "H", "D"]
+
+
+class Graph:
+    """Stripped back version of a mathematical graph."""
+
+    def __init__(self, data: Dict[int, List[int]]):
+        self.graph = data
+
+    @classmethod
+    def create_blank(cls, width: int = 4, height: int = 4):
+        return cls({n: cls.get_adjacent_nodes(n, width, height) for n in range(width * height)})
+
+    @staticmethod
+    def get_adjacent_nodes(node: int, width: int, height: int):
+        x = node % width
+        y = node // height
+        adjacent = []
+        for i in (-1, 0, 1):
+            for j in (-1, 0, 1):
+                if i != 0 or j != 0:
+                    if x + i in range(width) and y + j in range(height):
+                        adjacent.append(x + i + width * (y + j))
+        return adjacent
+
+    def remove_node(self, node: int):
+        new_graph = dict(self.graph)
+        for other_node in new_graph[node]:
+            new_adjacent = self.graph[other_node][:]
+            try:
+                new_adjacent.remove(node)
+            except ValueError:
+                ...
+            new_graph[other_node] = new_adjacent
+        new_graph[node] = []
+        return new_graph
+
+    def __str__(self):
+        return "\n".join([(k, v) for k, v in self.graph.items()])
 
 
 class BoggleSolver:
@@ -14,35 +52,6 @@ class BoggleSolver:
         self.letters_lookup = {i: letters[i] for i in range(16)}
         self.words = set()
         self.subgraphs = []
-
-    @staticmethod
-    def create_blank_graph() -> Dict[str, list]:
-        return {node: BoggleSolver.get_adjacent_nodes(node) for node in range(16)}
-
-    @staticmethod
-    def get_adjacent_nodes(node: int):
-        x = node % 4
-        y = node // 4
-        adjacent = []
-        for i in (-1, 0, 1):
-            for j in (-1, 0, 1):
-                if i != 0 or j != 0:
-                    if x + i in range(4) and y + j in range(4):
-                        adjacent.append(x + i + 4 * (y + j))
-        return adjacent
-
-    @staticmethod
-    def remove_node(graph: Dict[str, list], node: int):
-        new_graph = dict(graph)
-        new_graph[node] = []
-        for other_node in BoggleSolver.get_adjacent_nodes(node):
-            new_adjacent = graph[other_node][:]
-            try:
-                new_adjacent.remove(node)
-            except ValueError:
-                ...
-            new_graph[other_node] = new_adjacent
-        return new_graph
 
     def find_words(self, graph=None, path=None, current_node=None):
         if current_node is None:
@@ -70,8 +79,11 @@ class BoggleSolver:
 
 
 if __name__ == "__main__":
-    bs = BoggleSolver(letters)
-    time_start = time()
-    bs.find_words()
-    print(bs.words)
-    print(f"Took {time()-time_start} seconds to execute")
+    g = Graph.create_blank()
+    g.remove_node(3)
+    print(g)
+    # bs = BoggleSolver(letters)
+    # time_start = time()
+    # bs.find_words()
+    # print(bs.words)
+    # print(f"Took {time()-time_start} seconds to execute")
