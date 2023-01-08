@@ -6,8 +6,8 @@ from time import time
 from typing import Dict, List, Optional
 
 
-letters = ["S", "A", "N", "B", "E", "I", "W", "A", "N", "K", "O", "R", "T", "N", "H", "D"]
-letters2 = ["C", "O", "M", "P", "M", "T", "R", "A", "E", "N", "T", "A", "E", "S", "I", "L"]
+#letters = ["S", "A", "N", "B", "E", "I", "W", "A", "N", "K", "O", "R", "T", "N", "H", "D"]
+#letters2 = ["C", "O", "M", "P", "M", "T", "R", "A", "E", "N", "T", "A", "E", "S", "I", "L"]
 
 
 class Graph:
@@ -101,14 +101,14 @@ class BoggleSolver:
         if len(word) <= 15:
             return word in self.BEGINNING[len(word)]
 
-
+'''
 if __name__ == "__main__":
-    bs = BoggleSolver(letters2)
+    bs = BoggleSolver(letters)
     time_start = time()
     bs.find_words()
-    # print(bs.words)
+    print(bs.words)
     print(f"Took {time()-time_start} seconds to execute")
-
+'''
 # 65.57435822486877
 # 65.62787389755249
 # 60.21643900871277
