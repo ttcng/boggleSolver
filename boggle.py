@@ -66,9 +66,9 @@ def boggleSolverFxn(letters):
     bs = BoggleSolver(letters)
     time_start = time()
     bs.find_words()
-    print(bs.words)
     answers = list(bs.words)
     answers.sort()
+    print(answers)
 
     print(f"Took {time() - time_start} seconds to execute")
 
@@ -76,33 +76,88 @@ def boggleSolverFxn(letters):
 
 
 def openNewWindow():
+
     newWindow = Toplevel(root)
     newWindow.title("Boggle Solutions")
     newWindow.configure(bg="light blue")
     newWindow.geometry("600x400")
 
+    # creating main containers
+    top_Frame = Frame(newWindow, bg='red', width=400, height=200)
+    bottom_Frame = Frame(newWindow, bg='yellow', width=400, height=200)
 
+    # layout of containers
     newWindow.grid_columnconfigure(0, weight=1)
-    newWindow.grid_rowconfigure(0, weight=1)
+    newWindow.grid_rowconfigure(1, weight=1)
+
+    top_Frame.grid(row=0, sticky="ew")
+    bottom_Frame.grid(row=1, sticky="nsew")
+
+    # widgets for bottom frame
 
     bs = boggleSolverFxn(letters)
-    numberofWords = len(bs)
+    number_of_words = len(bs)
 
-    text = Text(newWindow, height=20, bg="light blue", font=("Bahnschrift", 25))
-    text.grid(row=0, column=0, sticky=NS)
+    text = Text(bottom_Frame, height=20,
+                bg='light blue', font=("Bahnschrift", 25))
 
-    scrollbar = Scrollbar(newWindow, orient='vertical', command=text.yview)
-    scrollbar.grid(row=0, column=2, sticky=NS)
+    scrollbar = Scrollbar(bottom_Frame, orient='vertical', command=text.yview)
+    text['yscroll'] = scrollbar.set
 
-    text['yscrollcommand'] = scrollbar.set
+    scrollbar.pack(side="right", fill="y")
+    text.pack(side="left", fill="both", expand=True)
 
-    for i in range(1, len(bs)):
-        position = f'{i}.0'
-        text.insert(position, f'{bs[i]}\n');
+    for i in range(0, len(bs)):
+        position = f'{i+1}.0'
+        text.insert(position, f'{bs[i]}\n')
 
-    text1 = Text(newWindow, height=20, bg="light blue", font=("Bahnschrift", 25))
-    text1.grid(row=0, column=1, sticky=NS)
-    text1.insert('1.0', "Wahey")
+
+
+'''
+    menu = Frame(newWindow, bg='gold')
+    menu.pack(expand=True)
+    menu_label = Label(menu, text="Top label", bg="red")
+    menu_label.grid(row=0, column=0)
+    menu_label2 = Label(menu, text="ha Jonny")
+    menu_label2.grid(row=0, column=1)
+    
+    container = Frame(newWindow)
+    container.pack(expand=True, fill="both")
+
+    canvas = Canvas(container)
+    canvas.grid(row=1, column=0)
+    canvas.columnconfigure(0,weight=3)
+    scrollbarTest = Scrollbar(container, orient="vertical", command=canvas.yview)
+    scrollableFrame = Frame(canvas)
+
+    # Whenever contents of scrollable frame change, need to tell canvas how
+    # large frame is going to be, so knows how much can scroll
+    # <Configure> triggers whenever scrollableFrame changes size
+
+    # Modifying canvas' scrollregion to have size of all canvas:
+    # bbox: 4-value tuple describing two corner positions of a rectangle (scroll region)
+    scrollableFrame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(
+            scrollregion=canvas.bbox("all")
+        )
+    )
+
+    # Drawing scrollable frame inside the canvas
+    canvas.create_window((0, 0), window=scrollableFrame, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbarTest.set)
+
+    for i in range(0, len(bs)):
+        Label(scrollableFrame, text=f'{bs[i]}\n').pack()
+
+    container.pack()
+    canvas.pack(side="left", fill="both", expand=True)
+    scrollbarTest.pack(side="right", fill="y")
+'''
+
+
+
+
 
 
 # Code starts here again
