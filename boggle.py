@@ -3,7 +3,6 @@ from tkinter import *
 import tkinter.ttk as ttk
 from threading import Timer
 
-global DICE
 DICE = [
     "EIOSST",
     "HIMNQU",
@@ -22,6 +21,7 @@ DICE = [
     "DISTTY",
     "EEGHNW",
 ]
+
 
 
 def generateLetters():
@@ -54,43 +54,130 @@ def decodeLetters(coded):
     return letters
 
 
-def cover(board):
-    c = board.create_rectangle(0, 0, 850, 850, fill="#BBBBBB", tags="rem")
-    t = board.create_text(
-        850 / 2, 850 / 2, tags="rem", text="Click to reveal", font=("Bahnschrift", die_width - 50)
+def drawBoard(boggleBoard, letters, width, height):
+    board_coords, border_size, die_width, padding, font_size, tile_border = get_dimensions(width, height)
+    boggleBoard.create_rectangle(board_coords, fill = "#FF6600", width=0)
+    index = 0
+    for x in range(board_coords[0][0] + border_size, board_coords[1][0] - border_size, die_width + padding):
+        for y in range(board_coords[0][1] + border_size, board_coords[1][1] - border_size, die_width + padding):
+            boggleBoard.create_rectangle(
+                x, y, x + die_width, y + die_width, fill="white", width=tile_border, outline="#883300"
+            )
+            if letters[index] == "Q":
+                boggleBoard.create_text(
+                    x + (die_width / 2),
+                    y + (die_width / 2) - 5,
+                    text="Qu",
+                    font=("Bahnschrift", font_size-5),
+                )
+            else:
+                boggleBoard.create_text(
+                    x + (die_width / 2),
+                    y + (die_width / 2) - 5,
+                    text=letters[index],
+                    font=("Bahnschrift", font_size),
+                )
+
+            index += 1
+
+
+def get_dimensions(width, height):
+    window_size = min(width, height)
+    board_coords = (
+        (int(width // 2 - window_size // 2 + window_size * (20/800)), int(height // 2 - window_size // 2 + window_size * (20/800))),
+        (int(width // 2 + window_size // 2 - window_size * (20/800)), int(height // 2 + window_size // 2 - window_size * (20/800))),
     )
-    board.tag_bind("rem", "<ButtonPress-1>", lambda x: board.delete("rem"))
-    board.pack(expand=True)
+    board_size = window_size - window_size * 2 * (20/800)
+    border_size = int(board_size * (75 / 800))
+    die_width = int(board_size * (125 / 800))
+    padding = int(board_size * (50 / 800))
+    font_size = int(board_size * (70 / 800))
+    tile_border = int(board_size * (3.5 / 800))
+    return board_coords, border_size, die_width, padding, font_size, tile_border
 
 
-def alarm(board):
-    a = board.create_text(
-        900 / 2, 80, text="30 seconds left!", font=("Bahnschrift", die_width - 80), fill="white"
+def cover(boggleBoard):
+    print("here")
+    board_coords, border_size, die_width, padding, font_size, tile_border = get_dimensions(window.winfo_width(), window.winfo_height())
+    c = boggleBoard.create_rectangle(board_coords, fill="#BBBBBB", tags="rem")
+    t = boggleBoard.create_text(
+        window.winfo_width()//2, window.winfo_height()//2, tags="rem", text="Click to reveal", font=("Bahnschrift", font_size)
     )
-    root.after(5000, lambda: board.delete(a))
+    boggleBoard.tag_bind("rem", "<ButtonPress-1>", lambda x: boggleBoard.delete("rem"))
+    boggleBoard.pack(fill="both", expand=True)
 
 
-def resize(event, title, firstTime):
+def alarm(boggleBoard):
+    board_coords, border_size, die_width, padding, font_size, tile_border = get_dimensions(window.winfo_width(), window.winfo_height())
+    a = boggleBoard.create_text(
+        min(window.winfo_width(), window.winfo_height()), min(window.winfo_width(), window.winfo_height()) * 9 / 10, text="30 seconds left!", font=("Bahnschrift", font_size//2), fill="white"
+    )
+    window.after(5000, lambda: boggleBoard.delete(a))
+
+
+def resize_start_window(event, title, firstTime):
     if firstTime:
-        startWindow.after(10, lambda: resize(event, title, False))
-    elif event.width == startWindow.winfo_width() and event.height == startWindow.winfo_height():
+        window.after(10, lambda: resize_start_window(event, title, False))
+    elif event.width == window.winfo_width() and event.height == window.winfo_height():
         title.config(font=("Berlin Sans FB Demi", (event.width + event.height) // 15))
 
 
-# Welcome
-startWindow = Tk()
-startWindow.title("Boggle")
-startWindow.minsize(500, 500)
-startWindow.configure(bg="Light blue")
+def resize_board(event, board, letters, firstTime):
+    if firstTime:
+        window.after(10, lambda: resize_board(event, board, letters, False))
+    elif event.width == window.winfo_width() and event.height == window.winfo_height():
+        board.delete("all")
+        drawBoard(board, letters, event.width, event.height)
 
-title = Label(startWindow, text="Boggle", font=("Berlin Sans FB Demi", 100), bg="Light blue")
+
+def clear():
+    list = window.pack_slaves()
+    for l in list:
+        l.destroy()
+
+
+def playGame():
+    window.title("Boggle Board")
+    window.configure(bg="#FF6600")
+
+    clear()
+
+    if seed.get() == "":
+        letters = generateLetters()
+    else:
+        letters = decodeLetters(seed.get())
+
+    boggleBoard = Canvas(
+        window,
+        bg="light blue",
+        width=700,
+        height=700
+    )
+    boggleBoard.pack(fill="both", expand=True)
+
+    window.bind("<Configure>", lambda x: resize_board(x, boggleBoard, letters, True))
+
+    window.after(180 * 1000, lambda: cover(boggleBoard))
+
+    window.after(150 * 1000, lambda: alarm(boggleBoard))
+
+        
+
+
+# Welcome
+window = Tk()
+window.title("Boggle")
+window.minsize(500, 500)
+window.configure(bg="Light blue")
+
+title = Label(window, text="Boggle", font=("Berlin Sans FB Demi", 100), bg="Light blue")
 title.pack(side="top", expand=True, fill="both", pady=(90, 10))
 
 # To resize Boggle title
-startWindow.bind("<Configure>", lambda x: resize(x, title, True))
+window.bind("<Configure>", lambda x: resize_start_window(x, title, True))
 
 
-letterInput = Frame(startWindow, bg="Light blue")
+letterInput = Frame(window, bg="Light blue")
 letterInput.pack(side="top", expand=True, fill="both", pady=60)
 
 seed = StringVar()  # Text entry
@@ -111,67 +198,10 @@ generator = Button(
 generator.pack(side="right", expand=True, fill="both", pady=0, padx=(10, 50))
 
 
-start = Button(
-    startWindow, text="START", font=("Bahnschrift 60"), command=lambda: startWindow.destroy()
-)  # GUI destroys
+start = Button(window, text="START", font=("Bahnschrift 60"), command=playGame)
 start.pack(side="top", expand=True, fill="both", pady=(0, 60), padx=(250, 250))
 
-startWindow.mainloop()
+window.mainloop()
 
-
-# GUI
-root = Tk()
-root.title("Boggle Board")
-root.configure(bg="#FF6600")
-
-if seed.get() == "":
-    letters = generateLetters()
-else:
-    letters = decodeLetters(seed.get())
-
-boggleBoard = Canvas(
-    root,
-    height=800,
-    width=800,
-    bg="#FF6600",
-    highlightbackground="light blue",
-    highlightthickness=50,
-)
-boggleBoard.pack(expand=True)
-
-border = 75 + 50
-padding = 50
-die_width = 125
-
-index = 0
-for x in range(border, 700, die_width + padding):
-    for y in range(border, 700, die_width + padding):
-        boggleBoard.create_rectangle(
-            x, y, x + die_width, y + die_width, fill="white", width=3.5, outline="#883300"
-        )
-        if letters[index] == "Q":
-            boggleBoard.create_text(
-                x + (die_width / 2),
-                y + (die_width / 2) - 5,
-                text="Qu",
-                font=("Bahnschrift", die_width - 55),
-            )
-        else:
-            boggleBoard.create_text(
-                x + (die_width / 2),
-                y + (die_width / 2) - 5,
-                text=letters[index],
-                font=("Bahnschrift", die_width - 50),
-            )
-
-        index += 1
-
-t = Timer(180.0, lambda: cover(boggleBoard))
-t.start()
-
-a = Timer(150.0, lambda: alarm(boggleBoard))
-a.start()
-
-root.mainloop()
 
 # print("bean awesome")

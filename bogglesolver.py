@@ -8,7 +8,8 @@ from typing import Dict, List, Optional
 
 letters = ["S", "A", "N", "B", "E", "I", "W", "A", "N", "K", "O", "R", "T", "N", "H", "D"]
 letters2 = ["C", "O", "M", "P", "M", "T", "R", "A", "E", "N", "T", "A", "E", "S", "I", "L"]
-
+letters3 = [l for l in "URSNLHAKMSBONRET"]
+letters4 = ['Y', 'U', 'D', 'K', 'E', 'O', 'Y', 'E', 'T', 'N', 'S', 'G', 'I', 'A', 'O', 'H']
 
 class Graph:
     """Stripped back version of a mathematical graph."""
@@ -103,10 +104,10 @@ class BoggleSolver:
 
 
 if __name__ == "__main__":
-    bs = BoggleSolver(letters2)
+    bs = BoggleSolver(letters4)
     time_start = time()
     bs.find_words()
-    # print(bs.words)
+    print(bs.words)
     print(f"Took {time()-time_start} seconds to execute")
 
 # 65.57435822486877
