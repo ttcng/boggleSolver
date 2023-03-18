@@ -112,54 +112,6 @@ def openNewWindow():
         text.insert(position, f'{bs[i]}\n')
 
 
-
-'''
-    menu = Frame(newWindow, bg='gold')
-    menu.pack(expand=True)
-    menu_label = Label(menu, text="Top label", bg="red")
-    menu_label.grid(row=0, column=0)
-    menu_label2 = Label(menu, text="ha Jonny")
-    menu_label2.grid(row=0, column=1)
-    
-    container = Frame(newWindow)
-    container.pack(expand=True, fill="both")
-
-    canvas = Canvas(container)
-    canvas.grid(row=1, column=0)
-    canvas.columnconfigure(0,weight=3)
-    scrollbarTest = Scrollbar(container, orient="vertical", command=canvas.yview)
-    scrollableFrame = Frame(canvas)
-
-    # Whenever contents of scrollable frame change, need to tell canvas how
-    # large frame is going to be, so knows how much can scroll
-    # <Configure> triggers whenever scrollableFrame changes size
-
-    # Modifying canvas' scrollregion to have size of all canvas:
-    # bbox: 4-value tuple describing two corner positions of a rectangle (scroll region)
-    scrollableFrame.bind(
-        "<Configure>",
-        lambda e: canvas.configure(
-            scrollregion=canvas.bbox("all")
-        )
-    )
-
-    # Drawing scrollable frame inside the canvas
-    canvas.create_window((0, 0), window=scrollableFrame, anchor="nw")
-    canvas.configure(yscrollcommand=scrollbarTest.set)
-
-    for i in range(0, len(bs)):
-        Label(scrollableFrame, text=f'{bs[i]}\n').pack()
-
-    container.pack()
-    canvas.pack(side="left", fill="both", expand=True)
-    scrollbarTest.pack(side="right", fill="y")
-'''
-
-
-
-
-
-
 # Code starts here again
 
 #Welcome
